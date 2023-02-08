@@ -8,6 +8,11 @@ import (
 	"github.com/anthdm/weavebox"
 )
 
+type CreateProductRequest struct {
+	SKU         string `json:"sku"`
+	ProductName string `json:"product_name"`
+}
+
 type ProductStore interface {
 	InsertProduct(*types.Product) error
 	GetOneProductByID(id string) (*types.Product, error)
@@ -24,11 +29,12 @@ func NewProductHandler(product_store ProductStore) *ProductHandler {
 }
 
 func (p *ProductHandler) HandleCreateProduct(c *weavebox.Context) error {
-	var product *types.Product
-	if err := json.NewDecoder(c.Request().Body()).Decode(product); err != nil {
+	req := &CreateProductRequest{}
+	if err := json.NewDecoder(c.Request().Body).Decode(req); err != nil {
 		return err
 	}
-	return c.JSON(http.StatusOK, &types.Product{SKU: "MAC M1"})
+
+	return c.JSON(http.StatusOK, req)
 }
 
 func (p *ProductHandler) HandleGetProduct(c *weavebox.Context) error {
